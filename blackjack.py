@@ -31,19 +31,16 @@ class DealingShoe(object):
         self.cards = CardDeck().cards * decks_cout
         shuffle(self.cards)
 
-    def get_card(self):
+    def pop_card(self):
         return self.cards.pop()
 
 
 class Player(object):
-    hand = []
 
     def __init__(self, name, bankroll=1000):
         self.name = name
         self.bankroll = bankroll
-
-    def take_card(self, card):
-        self.hand.append(card)
+        self.hand = []
 
     def show_cards(self):
         return self.hand
@@ -51,28 +48,104 @@ class Player(object):
     def add_bankroll(self, value):
         self.bankroll += value
 
-    def remove_bankroll(self, value):
+    def bet(self, value):
+        if (value > self.bankroll):
+            bankroll = self.bankroll
+            self.bankroll = 0
+            return bankroll
         self.bankroll -= value
+        return value
 
     def hand_value(self):
         return sum(card.value for card in self.hand)
+
+    # def bet(self):
+    #
+    #     while True:
+    #         try:
+    #             print("BANK: %s" % p.bankroll)
+    #             print("[1]=5$ [2]=10$ [3]=25$ [4]=100$")
+    #             bet_value = chips[int(input("Wybierz między 1-4: ")) - 1]
+    #         except:
+    #             print("Błąd, spróbuj jeszcze raz")
+    #             continue
+    #         break
+    #     self.remove_bankroll(bet_value)
 
     def __str__(self):
         return self.name
 
 
+def take_bet(player):
+    chips = (5, 25, 50, 100)
+    while True:
+        try:
+            print("BANK:", player.bankroll)
+            print("Wysokość zakładu [1]=5$ [2]=25$ [3]=50$ [4]=100$")
+            choice = int(input("Wybierz 1 - 4: "))
+            value = chips[choice - 1]
+
+        except:
+            print("Błąd! Spróbuj jeszcze raz")
+            continue
+        break
+    return player.bet(value)
+
+
+# class Game(object):
+#     def __init__(self):
+#         self.ds = DealingShoe()
+#         self.player = Player("Konrad")
+#         self.dealer = Player("Dealer")
+#         self.bet = 0
+#         self.run()
+#
+#     def bet(self, player):
+#         chips = (5, 25, 50, 100)
+#         while True:
+#             try:
+#                 print("Bank: " + player.bankroll)
+#                 print("[1]=5$ [2]=25$ [3]=50% [4]=100$")
+#                 choice = int(input("Wybierz między 1-4: "))
+#                 value = chips[choice]
+#             except:
+#                 print("Błąd!!!! Spróbuj jeszcze raz")
+#                 continue
+#             break
+#         self.bet += player.take_bet(value)
+#
+#     def give_card(self, player):
+#         player.take_card(self.ds.pop_card())
+#
+#     def run(self):
+#         running = True
+#         while running:
+#             # daj po 2 karty każdemu z graczy
+#             for i in range(2):
+#                 self.give_card(self.player)
+#                 self.give_card(self.dealer)
+#
+#             self.bet(self.player)
+# Game().run()
+# while game_running:
+#     print("%s: %s" % (d.name, str(d.hand[0])))
+#     print("%s: %s" % (p.name, str(p.hand)))
+
+# while d.hand_value() <= 16:
+#     print(d.hand_value())
+#     d.take_card(ds.pop_card())
+#
+# print(d.hand_value())
 ds = DealingShoe()
-
-p = Player("Konrad")
+k = Player("Konrad")
 d = Player("Dealer")
-p.take_card(ds.get_card())
-p.take_card(ds.get_card())
 
-while d.hand_value() <= 16:
-    print(d.hand_value())
-    d.take_card(ds.get_card())
+k.hand = [ds.pop_card(), ds.pop_card()]
+d.hand = [ds.pop_card(), ds.pop_card()]
 
-print(d.hand_value())
+print("Dealer: ", d.hand[0])
+print("Konrad: ", k.hand, k.hand_value())
 
-# print(p.show_cards())
-# print(p.hand_value())
+bet = take_bet(k)
+print(bet)
+print(k.bankroll)
